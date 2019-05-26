@@ -7,22 +7,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-        <style>
-            form { padding: 20px; position: fixed; bottom: 0px; width: 100%; padding-right: 50px;}
-            #messages {list-style-type: none; margin: 0; padding: 0; width: 100%;}
-            #messages li { padding: 5px 10px;}
-            #message li:nth-child(odd) { background: #eee}
-        </style>
+    <style>
+        form {
+            padding: 20px;
+            position: fixed;
+            bottom: 0px;
+            width: 100%;
+            padding-right: 50px;
+        }
+
+        #messages {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+        }
+
+        #messages li {
+            padding: 5px 10px;
+        }
+
+        #message li:nth-child(odd) {
+            background: #abc
+        }
+    </style>
 </head>
 
 <body>
     <div class="container-fluid">
         <div class="row">
-            <ul id="messages"></ul>
+            <div id="messages"></div>
         </div>
         <div class="row">
             <div class="input-group mb-3">
-                <form action=""> 
+                <form action="">
                     <input id="m" type="text" autocomplete="off" class="form-control" placeholder="message ..."
                         aria-label="message ..." aria-describedby="button-addon2">
                     <div class="input-group-append">
@@ -44,11 +62,22 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io.connect('http://localhost:3000');
-        socket.on('message', (data) => {
-            console.log(data);
-            socket.emit('another event', {
-                client: "I am great thank you"
-            });
+        
+        $('form').submit(() => {
+            socket.emit('message', $('#m').val());
+            $('#m').val('');
+            return false;
+        });
+
+        socket.on('connect',() => {
+            // emitting to every connected client
+            socket.emit('message','user connected');
+        });
+
+        
+
+        socket.on('message',(msg) => {
+            $('#messages').append($('<li>').text(msg));
         })
     </script>
 </body>
